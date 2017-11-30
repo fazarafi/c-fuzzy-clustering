@@ -1,6 +1,6 @@
 from __future__ import division
 import pandas as pd
-
+import math
 
 class Fcm_cluster(object):
     def __init__(self, m, dataset, eps, num_cluster):
@@ -85,12 +85,29 @@ class Fcm_cluster(object):
     def main_process(self):
         self.init_matrix()
         self.iterate()
-
-
     
-    def calc_dist(self, data, centroid):
+    def manhattan_dist(data, centroid):
+        total = 0.0
+        # u can traverse data or centroid, it's the same
+        i = 0
+        for elem in centroid:
+            total += abs(elem-data[i])
+            i += 1
         # TODO: cara cari distance
-        return 0.5
+        return total
+
+    def euclidean_dist(data, centroid):
+        total = 0.0
+        # u can traverse data or centroid, it's the same
+        i = 0
+        for elem in centroid:
+            total += math.pow(elem-data[i], 2)
+            i += 1
+        # TODO: cara cari distance
+        return math.sqrt(total)
+
+    def calc_dist(self, data, centroid):
+        return Fcm_cluster.euclidean_dist(data, centroid)
 
     def readfile(self, filename):
         self.dataset = []
@@ -121,11 +138,12 @@ class Fcm_cluster(object):
 
 
 fcm = Fcm_cluster(m=2, dataset=[[1,2,3],[1,2,2]], eps=0.01, num_cluster=2)
-fcm.readfile('dataset\\CencusIncome.data.txt')
+# fcm.readfile('dataset\\CencusIncome.data.txt')
 
-print(fcm.dataset[5][3])
+# print(fcm.dataset[5][3])
 
-# fcm.main_process()
+fcm.main_process()
+print(Fcm_cluster.euclidean_dist([1,2,3],[1,0,1]))
 # arr = [[1,2,3],[1,2,2]]
 # for i in range(len(arr)):
 #     print(i)
