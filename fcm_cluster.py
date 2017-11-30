@@ -93,12 +93,19 @@ class Fcm_cluster(object):
 		return 0.5
 
 
+import csv
+import numpy
+
+filename = 'dataset\\CencusIncome.data.txt'
+raw_data = open(filename, 'rt')
+reader = csv.reader(raw_data, delimiter=',', quoting=csv.QUOTE_NONE)
+x = list(reader)
+print(x[0])
+
 fcm = Fcm_cluster(m=2, dataset=[[1,2,3],[1,2,2]], eps=0.01, num_cluster=2)
+
 fcm.main_process()
-# arr = [[1,2,3],[1,2,2]]
-# for i in range(len(arr)):
-# 	print(i)
-# print(arr[0][1]+arr[1][1])
-
-
-
+arr = [[1,2,3],[1,2,2]]
+for i in range(len(arr)):
+	print(i)
+print(arr[0][1]+arr[1][1])
