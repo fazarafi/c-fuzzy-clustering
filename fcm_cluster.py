@@ -138,9 +138,19 @@ class Fcm_cluster(object):
     def delete_colummn(self, column_idx):
         self.dataset = np.delete(self.dataset, np.s_[column_idx:column_idx+1], axis=1)
     
+    # to be deleted = [1, 3, 5, 6, 7, 8, 9, 13, 14]
     def delete_columns(self, arr_column_idx):
         for idx in reversed(arr_column_idx):
             self.delete_colummn(idx)
+
+    def cast_dataset_to_float(self):
+        something = []
+        for ins in self.dataset:
+            new = []
+            for elem in ins:
+                new.append(float(elem))
+            something.append(new)
+        self.dataset = something
 
 
 
@@ -151,10 +161,11 @@ print(fcm.dataset)
 # fcm.delete_colummn(1)
 fcm.delete_columns([1, 3, 5, 6, 7, 8, 9, 13, 14])
 print(fcm.dataset)
+fcm.cast_dataset_to_float()
+# print(fcm.dataset)
+fcm.main_process()
 
-# fcm.main_process()
-# print(Fcm_cluster.euclidean_dist([1,2,3],[1,0,1]))
-# arr = [[1,2,3],[1,2,2]]
-# for i in range(len(arr)):
-#     print(i)
-# print(arr[0][1]+arr[1][1])
+arr = [[1,2,3],[1,2,2]]
+for i in range(len(arr)):
+    print(i)
+print(arr[0][1]+arr[1][1])
