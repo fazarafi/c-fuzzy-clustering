@@ -8,6 +8,7 @@
 import pandas as pd
 from sklearn import preprocessing
 
+# Ada masalah, nanti elemennya jadinya ada spasi depannya karena file-nya abis koma ada spasi
 class Preprocess(object):
     def __init__(self,nameOfFile):
         self.dataset = pd.read_csv('dataset/' + nameOfFile,header = None)
@@ -52,8 +53,8 @@ class Preprocess(object):
     
 p = Preprocess('CencusIncome.data.txt')
 # p.NominalToNumeric()
-p.printDataSet()
+# p.printDataSet()
 # p.saveToCSV()
-# p.printAtribute(1)
+p.printAtribute(1)
 # p.printRow(1)
-p.printHeader()
+# p.printHeader()

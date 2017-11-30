@@ -1,6 +1,7 @@
 from __future__ import division
 import pandas as pd
 import math
+import numpy as np
 
 class Fcm_cluster(object):
     def __init__(self, m, dataset, eps, num_cluster):
@@ -109,7 +110,7 @@ class Fcm_cluster(object):
     def calc_dist(self, data, centroid):
         return Fcm_cluster.euclidean_dist(data, centroid)
 
-    def readfile(self, filename):
+    def read_file(self, filename):
         self.dataset = []
         file = open(filename)
         for line in file:
@@ -117,7 +118,7 @@ class Fcm_cluster(object):
             self.dataset.append(content)
 
     # bad : missing value gone
-    def readfile2(self, filename):
+    def read_file2(self, filename):
         self.dataset = []
         file = open(filename)
         for line in file:
@@ -131,19 +132,28 @@ class Fcm_cluster(object):
             self.dataset.append(instance)
 
     # bad : space still exist
-    def readfile3(self, filename):
+    def read_file3(self, filename):
         self.dataset = pd.read_csv(filename, header=None)
-        
+
+    def delete_colummn(self, column_idx):
+        self.dataset = np.delete(self.dataset, np.s_[column_idx:column_idx+1], axis=1)
+    
+    def delete_columns(self, arr_column_idx):
+        for idx in reversed(arr_column_idx):
+            self.delete_colummn(idx)
 
 
 
 fcm = Fcm_cluster(m=2, dataset=[[1,2,3],[1,2,2]], eps=0.01, num_cluster=2)
-# fcm.readfile('dataset\\CencusIncome.data.txt')
+fcm.read_file('dataset\\nyoba.dat')
 
-# print(fcm.dataset[5][3])
+print(fcm.dataset)
+# fcm.delete_colummn(1)
+fcm.delete_columns([1, 3, 5, 6, 7, 8, 9, 13, 14])
+print(fcm.dataset)
 
-fcm.main_process()
-print(Fcm_cluster.euclidean_dist([1,2,3],[1,0,1]))
+# fcm.main_process()
+# print(Fcm_cluster.euclidean_dist([1,2,3],[1,0,1]))
 # arr = [[1,2,3],[1,2,2]]
 # for i in range(len(arr)):
 #     print(i)
