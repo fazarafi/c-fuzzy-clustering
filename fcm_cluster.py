@@ -4,14 +4,14 @@ import math
 import numpy as np
 
 class Fcm_cluster(object):
-    def __init__(self, m, dataset, eps, num_cluster):
+    def __init__(self, m, eps, num_cluster):
         self.m = m
-        self.dataset = dataset
+        self.dataset = None
         self.centroids = []
         self.num_cluster = num_cluster
-        self.num_dataset = len(dataset)
+        self.num_dataset = None
         self.eps = eps
-        self.m_matrix = [[0 for i in range(self.num_cluster)] for j in range(self.num_dataset)]
+        self.m_matrix = None
 
     def init_matrix(self):
         for i in range(self.num_dataset):
@@ -116,6 +116,8 @@ class Fcm_cluster(object):
         for line in file:
             content = line.split(', ')
             self.dataset.append(content)
+        self.num_dataset = len(self.dataset)
+        self.m_matrix = [[0 for i in range(self.num_cluster)] for j in range(self.num_dataset)]
 
     # bad : missing value gone
     def read_file2(self, filename):
@@ -130,39 +132,41 @@ class Fcm_cluster(object):
                 except ValueError:
                     pass
             self.dataset.append(instance)
+        self.num_dataset = len(self.dataset)
+        self.m_matrix = [[0 for i in range(self.num_cluster)] for j in range(self.num_dataset)]
 
     # bad : space still exist
     def read_file3(self, filename):
         self.dataset = pd.read_csv(filename, header=None)
+        self.num_dataset = len(self.dataset)
+        self.m_matrix = [[0 for i in range(self.num_cluster)] for j in range(self.num_dataset)]
 
-    def delete_colummn(self, column_idx):
+    def delete_column(self, column_idx):
         self.dataset = np.delete(self.dataset, np.s_[column_idx:column_idx+1], axis=1)
     
     # to be deleted = [1, 3, 5, 6, 7, 8, 9, 13, 14]
     def delete_columns(self, arr_column_idx):
         for idx in reversed(arr_column_idx):
-            self.delete_colummn(idx)
+            self.delete_column(idx)
 
     def cast_dataset_to_float(self):
-        something = []
+        new_dataset = []
         for ins in self.dataset:
-            new = []
+            new_ins = []
             for elem in ins:
-                new.append(float(elem))
-            something.append(new)
-        self.dataset = something
+                new_ins.append(float(elem))
+            new_dataset.append(new_ins)
+        self.dataset = new_dataset
+
+    def get_dataset(self, filename):
+        self.read_file(filename)
+        self.delete_columns([1, 3, 5, 6, 7, 8, 9, 13, 14])
+        self.cast_dataset_to_float()
 
 
+fcm = Fcm_cluster(m=2, eps=0.01, num_cluster=2)
+fcm.get_dataset('dataset\\CencusIncome.data.txt')
 
-fcm = Fcm_cluster(m=2, dataset=[[1,2,3],[1,2,2]], eps=0.01, num_cluster=2)
-fcm.read_file('dataset\\nyoba.dat')
-
-print(fcm.dataset)
-# fcm.delete_colummn(1)
-fcm.delete_columns([1, 3, 5, 6, 7, 8, 9, 13, 14])
-print(fcm.dataset)
-fcm.cast_dataset_to_float()
-# print(fcm.dataset)
 fcm.main_process()
 
 arr = [[1,2,3],[1,2,2]]
