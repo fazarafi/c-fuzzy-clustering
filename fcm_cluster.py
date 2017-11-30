@@ -98,6 +98,21 @@ class Fcm_cluster(object):
             content = line.split(', ')
             self.dataset.append(content)
 
+    def readfile2(self, filename):
+        self.dataset = []
+        file = open(filename)
+        for line in file:
+            instance = []
+            content = line.split(', ')
+            for elem in content:
+                try:
+                    instance.append(float(elem))
+                except ValueError:
+                    pass
+            self.dataset.append(instance)
+
+
+
 fcm = Fcm_cluster(m=2, dataset=[[1,2,3],[1,2,2]], eps=0.01, num_cluster=2)
 fcm.readfile('dataset\\CencusIncome.data.txt')
 
