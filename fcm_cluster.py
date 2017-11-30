@@ -1,4 +1,5 @@
 from __future__ import division
+import pandas as pd
 
 
 class Fcm_cluster(object):
@@ -98,6 +99,7 @@ class Fcm_cluster(object):
             content = line.split(', ')
             self.dataset.append(content)
 
+    # bad : missing value gone
     def readfile2(self, filename):
         self.dataset = []
         file = open(filename)
@@ -111,12 +113,17 @@ class Fcm_cluster(object):
                     pass
             self.dataset.append(instance)
 
+    # bad : space still exist
+    def readfile3(self, filename):
+        self.dataset = pd.read_csv(filename, header=None)
+        
+
 
 
 fcm = Fcm_cluster(m=2, dataset=[[1,2,3],[1,2,2]], eps=0.01, num_cluster=2)
 fcm.readfile('dataset\\CencusIncome.data.txt')
 
-print(fcm.dataset[3][14])
+print(fcm.dataset[5][3])
 
 # fcm.main_process()
 # arr = [[1,2,3],[1,2,2]]
