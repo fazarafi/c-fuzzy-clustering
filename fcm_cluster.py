@@ -14,6 +14,7 @@ class Fcm_cluster(object):
         self.m_matrix = None
         self.means = None
         self.standard_deviation = None
+        self.z_score = None
 
     def init_matrix(self):
         for i in range(self.num_dataset):
@@ -213,11 +214,28 @@ class Fcm_cluster(object):
         self.standard_deviation = sd
         return self.standard_deviation
 
+    # a function
+    def calculate_z_score(self):
+        means = self.calculate_means()
+        sd = self.calculate_sd()
+
+        z_score = []
+        for ins in self.dataset:
+            j = 0
+            z_score_ins = []
+            for elem in ins:
+                z_score_ins.append((elem-means[j])/sd[j])
+                j += 1
+            z_score.append(z_score_ins)
+
+        self.z_score = z_score
+        return self.z_score
+
+    def set_dataset_to_z_score(self):
+        self.dataset = self.calculate_z_score()
     
 
 fcm = Fcm_cluster(m=2, eps=0.01, num_cluster=2)
 fcm.get_dataset('dataset\\CencusIncome.data.txt') # ngambil data dari file, hapus yg nominal
-fcm.calculate_means()
-fcm.calculate_sd()
-print(fcm.standard_deviation)
+fcm.set_dataset_to_z_score() # optional
 fcm.main_process()
