@@ -5,16 +5,17 @@ import numpy as np
 
 class Fcm_cluster(object):
     def __init__(self, m, eps, num_cluster):
-        self.m = m
+        self.m = m # parameter, has to be greater than 1
         self.dataset = None
         self.centroids = []
-        self.num_cluster = num_cluster
-        self.num_dataset = None
-        self.eps = eps
-        self.m_matrix = None
-        self.means = None
-        self.standard_deviation = None
-        self.z_score = None
+        self.num_cluster = num_cluster # int
+        self.num_dataset = None # int
+        self.eps = eps # parameter, positive near zero
+        self.m_matrix = None # matrix of float, size = num_dataset * num_cluster
+        self.means = None # array of float, len = num_atr
+        self.standard_deviation = None # array of float, len = num_atr
+        self.z_score = None # matrix of float, size = dataset's size
+        self.cluster = None # array of integer, len = num_dataset
 
     def init_matrix(self):
         for i in range(self.num_dataset):
@@ -233,9 +234,12 @@ class Fcm_cluster(object):
 
     def set_dataset_to_z_score(self):
         self.dataset = self.calculate_z_score()
+
+    # def print_clusters(self):
     
 
 fcm = Fcm_cluster(m=2, eps=0.01, num_cluster=2)
 fcm.get_dataset('dataset\\CencusIncome.data.txt') # ngambil data dari file, hapus yg nominal
 fcm.set_dataset_to_z_score() # optional
 fcm.main_process()
+print(fcm.centroids)
