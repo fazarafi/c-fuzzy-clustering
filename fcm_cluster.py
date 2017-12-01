@@ -12,6 +12,7 @@ class Fcm_cluster(object):
         self.num_dataset = None
         self.eps = eps
         self.m_matrix = None
+        self.means = None
 
     def init_matrix(self):
         for i in range(self.num_dataset):
@@ -164,12 +165,34 @@ class Fcm_cluster(object):
         self.cast_dataset_to_float()
 
 
+
+    # Z-score
+
+    def calculate_means(self):
+        means = []
+        # inisialisasi
+        for atr in self.dataset[0]:
+            means.append(0)
+
+        # hitung total
+        for ins in self.dataset:
+            i = 0
+            for elem in ins:
+                means[i] += elem
+                i += 1
+
+        # dibagi jumlah dataset
+        i = 0
+        for elem in means:
+            means[i] = elem / self.num_dataset
+            i += 1
+
+        self.means = means
+        return means
+
+    
+
 fcm = Fcm_cluster(m=2, eps=0.01, num_cluster=2)
-fcm.get_dataset('dataset\\CencusIncome.data.txt')
-
+fcm.get_dataset('dataset\\CencusIncome.data.txt') # ngambil data dari file, hapus yg nominal
+fcm.calculate_means()
 fcm.main_process()
-
-arr = [[1,2,3],[1,2,2]]
-for i in range(len(arr)):
-    print(i)
-print(arr[0][1]+arr[1][1])
