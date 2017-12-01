@@ -13,6 +13,7 @@ class Fcm_cluster(object):
         self.eps = eps
         self.m_matrix = None
         self.means = None
+        self.standard_deviation = None
 
     def init_matrix(self):
         for i in range(self.num_dataset):
@@ -188,11 +189,35 @@ class Fcm_cluster(object):
             i += 1
 
         self.means = means
-        return means
+        return self.means
+
+    def calculate_sd(self):
+        sd = []
+        # inisialisasi
+        for atr in self.dataset[0]:
+            sd.append(0)
+
+        # hitung total (x-xbar)^2
+        for ins in self.dataset:
+            i = 0
+            for elem in ins:
+                sd[i] += math.pow(elem-self.means[i], 2)
+                i += 1
+
+        # dibagi jumlah dataset - 1, trus di akar
+        i = 0
+        for elem in sd:
+            sd[i] = math.sqrt(elem / (self.num_dataset-1))
+            i += 1
+
+        self.standard_deviation = sd
+        return self.standard_deviation
 
     
 
 fcm = Fcm_cluster(m=2, eps=0.01, num_cluster=2)
 fcm.get_dataset('dataset\\CencusIncome.data.txt') # ngambil data dari file, hapus yg nominal
 fcm.calculate_means()
+fcm.calculate_sd()
+print(fcm.standard_deviation)
 fcm.main_process()
