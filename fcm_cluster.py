@@ -2,6 +2,7 @@ from __future__ import division
 import pandas as pd
 import math
 import numpy as np
+import random
 
 class Fcm_cluster(object):
     def __init__(self, m, eps, num_cluster):
