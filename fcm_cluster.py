@@ -148,11 +148,13 @@ class Fcm_cluster(object):
     def delete_column(self, column_idx):
         self.dataset = np.delete(self.dataset, np.s_[column_idx:column_idx+1], axis=1)
     
+    # pre requisite : self.dataset
     # to be deleted = [1, 3, 5, 6, 7, 8, 9, 13, 14]
     def delete_columns(self, arr_column_idx):
         for idx in reversed(arr_column_idx):
             self.delete_column(idx)
 
+    # pre requisite : self.dataset only contains numeric, no nominal, no missing values
     def cast_dataset_to_float(self):
         new_dataset = []
         for ins in self.dataset:
@@ -193,6 +195,7 @@ class Fcm_cluster(object):
         self.means = means
         return self.means
 
+    # pre requisite : self.means
     def calculate_sd(self):
         sd = []
         # inisialisasi
@@ -235,11 +238,29 @@ class Fcm_cluster(object):
     def set_dataset_to_z_score(self):
         self.dataset = self.calculate_z_score()
 
-    # def print_clusters(self):
-    
+    # pre requisite : self.m_matrix
+    def get_clusters(self):
+        cluster = []
+
+        for ins in self.m_matrix:
+            membership_max = 0
+            idx_max = 0
+            idx = 0
+            for membership in ins:
+                if (membership>membership_max):
+                   idx_max = idx
+                   membership_max = membership
+                idx += 1
+            cluster.append(idx_max)
+
+        self.cluster = cluster
+        return self.cluster
+
+    def print_clusters(self):
+        
 
 fcm = Fcm_cluster(m=2, eps=0.01, num_cluster=2)
 fcm.get_dataset('dataset\\CencusIncome.data.txt') # ngambil data dari file, hapus yg nominal
 fcm.set_dataset_to_z_score() # optional
 fcm.main_process()
-print(fcm.centroids)
+print(fcm.get_clusters())
