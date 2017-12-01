@@ -19,8 +19,13 @@ class Fcm_cluster(object):
 
     def init_matrix(self):
         for i in range(self.num_dataset):
+            max = 1.0
             for j in range(self.num_cluster):
-                self.m_matrix[i][j] = 0.1*j+0.2
+                if (j==self.num_cluster-1):
+                    self.m_matrix[i][j] = max;
+                else:
+                    self.m_matrix[i][j] = random.uniform(0.0,max)
+                max -= self.m_matrix[i][j]
         
     def iterate(self):
         centroids = [[] for i in range(self.num_cluster)]
@@ -275,11 +280,16 @@ class Fcm_cluster(object):
             arr_cluster.append(arr_member)
             i += 1
 
-        print("all = ", arr_cluster)
+        print("all =", arr_cluster)
         print("")
         i = 0
         for ins_member in arr_cluster:
-            print("cluster-", i, " = ", ins_member)
+            print("cluster - ", i, "=", ins_member)
+            i += 1
+        print("")
+        i = 0
+        for ins_member in arr_cluster:
+            print("total member cluster -", i, "=", len(ins_member))
             i += 1
 
 fcm = Fcm_cluster(m=2, eps=0.01, num_cluster=5)
