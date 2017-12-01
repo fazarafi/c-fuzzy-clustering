@@ -18,6 +18,10 @@ class Fcm_cluster(object):
         self.z_score = None # matrix of float, size = dataset's size
         self.cluster = None # array of integer, len = num_dataset
 
+    def main_process(self):
+        self.init_matrix()
+        self.iterate()
+    
     def init_matrix(self):
         for i in range(self.num_dataset):
             max = 1.0
@@ -32,23 +36,31 @@ class Fcm_cluster(object):
         centroids = [[] for i in range(self.num_cluster)]
         stop = False
         while not(stop):
-            prev_mat = self.m_matrix
+            prev_mat = self.copy_matrix()
             for j in range(self.num_cluster):
                 sig_data_md = []
                 sig_md = 0
                 for i in range(self.num_dataset):
-                    sig_data_md.append(self.time_att_md(self.dataset[i],(self.m_matrix[i][j]**self.m)))
-                    sig_md += self.m_matrix[i][j]**self.m
+                    sig_data_md.append(self.time_att_md(self.dataset[i],pow(self.m_matrix[i][j],self.m)))
+                    sig_md += pow(self.m_matrix[i][j],self.m)
                 
                 centroids[j] = self.divide_att_md(self.accumulate_att(sig_data_md),sig_md)
-
             self.update_matrix(centroids)
-            # print('max=',self.find_max_md())
-            # print('eps=',self.eps)
-            if (self.find_max_md()<self.eps):
+            print('max=',self.find_max_md_diff(prev_mat))
+            print('eps=',self.eps)
+            if (self.find_max_md_diff(prev_mat)<self.eps):
                 stop = True    
-            stop = True
+            # stop = True
 
+
+    def copy_matrix(self):
+        dup = [[0 for i in range(self.num_cluster)] for j in range(self.num_dataset)]
+        for i in range(self.num_dataset):
+            dup[0] = self.m_matrix[0][:]
+            # for j in range(self.num_cluster):
+            #     dup
+
+        return dup
 
     def time_att_md(self, attributes, md):
         result = []
@@ -77,26 +89,20 @@ class Fcm_cluster(object):
             for j in range(self.num_cluster):
                 sig_dist = 0
                 for k in range(self.num_cluster):
-                    sig_dist += (self.calc_dist(self.dataset[i],centroids[j])/
-                        self.calc_dist(self.dataset[i],centroids[k]))**(2/(self.m-1))
+                    sig_dist += pow(self.calc_dist(self.dataset[i],centroids[j])/self.calc_dist(self.dataset[i],centroids[k]),2/(self.m-1))
 
                 self.m_matrix[i][j] = 1/sig_dist
-
-
-    def find_max_md(self):
-        max_md = 0
-        for i in range(self.num_dataset):
-            for j in range(self.num_cluster):
-                if (self.m_matrix[i][j] > max_md):
-                    max_md = self.m_matrix[i][j]
-
-        return max_md
-
-
-    def main_process(self):
-        self.init_matrix()
-        self.iterate()
     
+    def find_max_md_diff(self, prev_mat):
+        max_md_diff = 0
+        for i in range(self.num_dataset):
+        	for j in range(self.num_cluster):
+        		diff = abs(self.m_matrix[i][j]-prev_mat[i][j])
+        		# print(self.m_matrix[i][j],prev_mat[i][j])
+        		if (diff > max_md_diff):
+        			max_md_diff = diff
+        return max_md_diff
+
     def manhattan_dist(data, centroid):
         total = 0.0
         # u can traverse data or centroid, it's the same
@@ -104,7 +110,6 @@ class Fcm_cluster(object):
         for elem in centroid:
             total += abs(elem-data[i])
             i += 1
-        # TODO: cara cari distance
         return total
 
     def euclidean_dist(data, centroid):
@@ -293,7 +298,7 @@ class Fcm_cluster(object):
             print("total member cluster -", i, "=", len(ins_member))
             i += 1
 
-fcm = Fcm_cluster(m=2, eps=0.01, num_cluster=5)
+fcm = Fcm_cluster(m=10, eps=0.5001, num_cluster=2)
 fcm.get_dataset('dataset\\CencusIncome.data.txt') # ngambil data dari file, hapus yg nominal
 fcm.set_dataset_to_z_score() # optional, kalo error, division by zero, berarti sd = 0
 fcm.main_process() # clustering
