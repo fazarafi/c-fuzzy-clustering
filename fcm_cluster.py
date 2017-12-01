@@ -164,15 +164,15 @@ class Fcm_cluster(object):
             new_dataset.append(new_ins)
         self.dataset = new_dataset
 
+    # WARNING!!, dataset has to end with maximum 1 new line.
+    # More new line at the end of file will cause the delete_columns to error
     def get_dataset(self, filename):
         self.read_file(filename)
         self.delete_columns([1, 3, 5, 6, 7, 8, 9, 13, 14])
         self.cast_dataset_to_float()
 
-
-
     # Z-score
-
+    # mean
     def calculate_means(self):
         means = []
         # inisialisasi
@@ -195,6 +195,7 @@ class Fcm_cluster(object):
         self.means = means
         return self.means
 
+    # sd
     # pre requisite : self.means
     def calculate_sd(self):
         sd = []
@@ -218,6 +219,7 @@ class Fcm_cluster(object):
         self.standard_deviation = sd
         return self.standard_deviation
 
+    # z-score
     # a function
     def calculate_z_score(self):
         means = self.calculate_means()
@@ -256,11 +258,33 @@ class Fcm_cluster(object):
         self.cluster = cluster
         return self.cluster
 
+    # pre requisite : self.cluster
     def print_clusters(self):
-        
+        arr_cluster = [] # consist of array of idx_ins
+        i = 0
 
-fcm = Fcm_cluster(m=2, eps=0.01, num_cluster=2)
+        while (i < self.num_cluster):
+            idx_ins = 0
+            arr_member = []
+
+            for idx_clus in self.cluster:
+                if (idx_clus == i):
+                    arr_member.append(idx_ins)
+                idx_ins += 1
+
+            arr_cluster.append(arr_member)
+            i += 1
+
+        print("all = ", arr_cluster)
+        print("")
+        i = 0
+        for ins_member in arr_cluster:
+            print("cluster-", i, " = ", ins_member)
+            i += 1
+
+fcm = Fcm_cluster(m=2, eps=0.01, num_cluster=5)
 fcm.get_dataset('dataset\\CencusIncome.data.txt') # ngambil data dari file, hapus yg nominal
-fcm.set_dataset_to_z_score() # optional
-fcm.main_process()
-print(fcm.get_clusters())
+fcm.set_dataset_to_z_score() # optional, kalo error, division by zero, berarti sd = 0
+fcm.main_process() # clustering
+fcm.get_clusters() # dapetin array of cluster (tiap ins)
+fcm.print_clusters() # print hasil
