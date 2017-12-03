@@ -17,6 +17,7 @@ class Fcm_cluster(object):
         self.standard_deviation = None # array of float, len = num_atr
         self.z_score = None # matrix of float, size = dataset's size
         self.cluster = None # array of integer, len = num_dataset
+        self.target = None
 
     def main_process(self):
         self.init_matrix()
@@ -35,7 +36,10 @@ class Fcm_cluster(object):
     def iterate(self):
         centroids = [[] for i in range(self.num_cluster)]
         stop = False
+        itr = 0
         while not(stop):
+            itr+=1
+            print("Iterasi" + str(itr))
             prev_mat = self.copy_matrix()
             for j in range(self.num_cluster):
                 sig_data_md = []
@@ -179,6 +183,7 @@ class Fcm_cluster(object):
     # More new line at the end of file will cause the delete_columns to error
     def get_dataset(self, filename):
         self.read_file(filename)
+        self.getTarget()
         self.delete_columns([1, 3, 5, 6, 7, 8, 9, 13, 14])
         self.cast_dataset_to_float()
 
@@ -286,21 +291,69 @@ class Fcm_cluster(object):
             arr_cluster.append(arr_member)
             i += 1
 
-        print("all =", arr_cluster)
-        print("")
-        i = 0
-        for ins_member in arr_cluster:
-            print("cluster - ", i, "=", ins_member)
-            i += 1
-        print("")
+        # print("all =", arr_cluster)
+        # print("")
+        # i = 0
+        # for ins_member in arr_cluster:
+        #     print("cluster - ", i, "=", ins_member)
+        #     i += 1
         i = 0
         for ins_member in arr_cluster:
             print("total member cluster -", i, "=", len(ins_member))
             i += 1
+    # buat kasus ini aja
+    def getTarget(self):
+        self.target = []
+        for ins in self.dataset:
+            # print(len(ins[14]))
+            if len(ins[14]) == 6:
+                self.target.append(1)
+            else:
+                self.target.append(0)
+        
+        # print(self.target)
+    # buat kasus ini aja
+    def printAccuracy(self):
+        arr_cluster = [] # consist of array of idx_ins
+        i = 0
+
+        while (i < self.num_cluster):
+            idx_ins = 0
+            arr_member = []
+
+            for idx_clus in self.cluster:
+                if (idx_clus == i):
+                    arr_member.append(idx_ins)
+                idx_ins += 1
+
+            arr_cluster.append(arr_member)
+            i += 1
+        i = 0
+        correct = 0
+        total = 0
+        for ins_member in arr_cluster:
+            total += len(ins_member)
+            for ins in ins_member:
+                if self.target[int(ins)] == i:
+                    correct +=1
+            i += 1
+
+        print("akurasi " + str(correct/total*100))
 
 fcm = Fcm_cluster(m=10, eps=0.5001, num_cluster=2)
-fcm.get_dataset('dataset\\CencusIncome.data.txt') # ngambil data dari file, hapus yg nominal
-fcm.set_dataset_to_z_score() # optional, kalo error, division by zero, berarti sd = 0
-fcm.main_process() # clustering
-fcm.get_clusters() # dapetin array of cluster (tiap ins)
-fcm.print_clusters() # print hasil
+print("Dataset ConcusIncome.data.txt")
+fcm.get_dataset('dataset/CencusIncome.data.txt') 
+fcm.set_dataset_to_z_score() 
+fcm.main_process() 
+fcm.get_clusters() 
+fcm.print_clusters() 
+fcm.printAccuracy()
+print("")
+fcm2 = Fcm_cluster(m=10, eps=0.5001, num_cluster=2)
+print("Dataset ConcusIncome.test.txt")
+fcm2.get_dataset('dataset/CencusIncome.data.txt') 
+fcm2.set_dataset_to_z_score() 
+fcm2.main_process() 
+fcm2.get_clusters() 
+fcm2.print_clusters()
+fcm2.printAccuracy() 
